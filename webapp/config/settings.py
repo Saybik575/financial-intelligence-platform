@@ -202,13 +202,13 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
-CELERY_BROKER_URL = (
-    "redis://redis:6379/0"
-)
+# CELERY_BROKER_URL = (
+#     "redis://redis:6379/0"
+# )
 
-CELERY_RESULT_BACKEND = (
-    "redis://redis:6379/0"
-)
+# CELERY_RESULT_BACKEND = (
+#     "redis://redis:6379/0"
+# )
 
 # Task execution settings
 CELERY_TASK_SERIALIZER = 'json'
@@ -225,30 +225,30 @@ CELERY_TASK_DEFAULT_QUEUE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE = "default"
 CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 
-CELERY_BEAT_SCHEDULE = {
-
-    "nightly-etl-refresh": {
-
-        "task":
-            "partners.tasks.nightly_etl_refresh",
-
-        "schedule":
-            crontab(minute="*/1"),
-
-        "options": {"queue": "default"}
-    },
-
-    "nightly-ml-rescoring": {
-
-        "task":
-            "partners.tasks.nightly_ml_rescoring",
-
-        "schedule":
-            crontab(minute="*/1"),
-
-        "options": {"queue": "default"},
-    },
-}
+# CELERY_BEAT_SCHEDULE = {
+#
+#     "nightly-etl-refresh": {
+#
+#         "task":
+#             "partners.tasks.nightly_etl_refresh",
+#
+#         "schedule":
+#             crontab(minute="*/1"),
+#
+#         "options": {"queue": "default"}
+#     },
+#
+#     "nightly-ml-rescoring": {
+#
+#         "task":
+#             "partners.tasks.nightly_ml_rescoring",
+#
+#         "schedule":
+#             crontab(minute="*/1"),
+#
+#         "options": {"queue": "default"},
+#     },
+# }
 
 STATIC_URL = "static/"
 

@@ -47,9 +47,9 @@ from rest_framework.parsers import JSONParser
 
 class PartnerAPIView(APIView):
 
-    throttle_classes = [
-        PartnerRateThrottle
-    ]
+    # throttle_classes = [
+    #     PartnerRateThrottle
+    # ]
 
 
     def initial(self, request, *args, **kwargs):
@@ -117,26 +117,26 @@ class PartnerAPIView(APIView):
 
         try:
 
-            log_api_usage.delay(
-
-                client.id if client else None,
-
-                request.path,
-
-                request.method,
-
-                response.status_code,
-
-                (time.time() - self._partner_start_time) * 1000,
-
-                request.META.get(
-                    "REMOTE_ADDR"
-                ),
-
-                len(request.body or b""),
-
-                len(str(response_payload).encode("utf-8")),
-            )
+            # log_api_usage.delay(
+            #
+            #     client.id if client else None,
+            #
+            #     request.path,
+            #
+            #     request.method,
+            #
+            #     response.status_code,
+            #
+            #     (time.time() - self._partner_start_time) * 1000,
+            #
+            #     request.META.get(
+            #         "REMOTE_ADDR"
+            #     ),
+            #
+            #     len(request.body or b""),
+            #
+            #     len(str(response_payload).encode("utf-8")),
+            # )
 
         except Exception:
 
