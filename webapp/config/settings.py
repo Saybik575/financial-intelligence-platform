@@ -98,44 +98,60 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
+if os.getenv("RENDER") == "True":
 
-    'default': {
+    DATABASES = {
 
-        'ENGINE':
-            'django.db.backends.postgresql',
+        "default": {
 
-        'NAME':
-            os.getenv(
-                'DB_NAME',
-                'fintech'
-            ),
+            "ENGINE":
+                "django.db.backends.sqlite3",
 
-        'USER':
-            os.getenv(
-                'DB_USER',
-                'postgres'
-            ),
-
-        'PASSWORD':
-            os.getenv(
-                'DB_PASSWORD',
-                'postgres'
-            ),
-
-        'HOST':
-            os.getenv(
-                'DB_HOST',
-                'localhost'
-            ),
-
-        'PORT':
-            os.getenv(
-                'DB_PORT',
-                '5432'
-            ),
+            "NAME":
+                BASE_DIR / "db.sqlite3",
+        }
     }
-}
+
+else:
+
+    DATABASES = {
+
+        'default': {
+
+            'ENGINE':
+                'django.db.backends.postgresql',
+
+            'NAME':
+                os.getenv(
+                    'DB_NAME',
+                    'fintech'
+                ),
+
+            'USER':
+                os.getenv(
+                    'DB_USER',
+                    'postgres'
+                ),
+
+            'PASSWORD':
+                os.getenv(
+                    'DB_PASSWORD',
+                    'postgres'
+                ),
+
+            'HOST':
+                os.getenv(
+                    'DB_HOST',
+                    'localhost'
+                ),
+
+            'PORT':
+                os.getenv(
+                    'DB_PORT',
+                    '5432'
+                ),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
