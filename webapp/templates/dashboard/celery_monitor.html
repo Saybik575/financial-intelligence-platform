@@ -1,0 +1,141 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Celery Monitor{% endblock %}
+{% block page_subtitle %}Background task execution status and queue management{% endblock %}
+
+{% block content %}
+{% if error %}
+<div class="error-message">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="kpi-grid">
+    <div class="kpi blue">
+        <div class="kpi-label">Active Tasks</div>
+        <div class="kpi-value">{{ total_active }}</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Scheduled Tasks</div>
+        <div class="kpi-value">{{ total_scheduled }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Active Tasks</h2>
+    {% if active_tasks %}
+    <table>
+        <thead>
+            <tr>
+                <th>Worker</th>
+                <th>Task Name</th>
+                <th>Task ID</th>
+                <th>Arguments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker, tasks in active_tasks.items %}
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ worker }}</td>
+                    <td>{{ task.name }}</td>
+                    <td style="font-size: 0.875rem; color: #6b7280;">{{ task.id|truncatechars:30 }}</td>
+                    <td style="font-size: 0.875rem;">
+                        {% if task.args %}
+                        <code>{{ task.args|truncatechars:50 }}</code>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; color: #9ca3af; padding: 2rem;">
+        No active tasks
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Scheduled Tasks</h2>
+    {% if scheduled_tasks %}
+    <table>
+        <thead>
+            <tr>
+                <th>Worker</th>
+                <th>Task Name</th>
+                <th>ETA</th>
+                <th>Arguments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker, tasks in scheduled_tasks.items %}
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ worker }}</td>
+                    <td>{{ task.name }}</td>
+                    <td style="font-size: 0.875rem;">{{ task.eta }}</td>
+                    <td style="font-size: 0.875rem;">
+                        {% if task.args %}
+                        <code>{{ task.args|truncatechars:50 }}</code>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; color: #9ca3af; padding: 2rem;">
+        No scheduled tasks
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Periodic Tasks</h2>
+    <p>The following tasks are scheduled to run automatically:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Schedule</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>nightly_etl_refresh</code></td>
+                <td>Every minute (dev)</td>
+                <td>Refresh ETL data from source systems</td>
+            </tr>
+            <tr>
+                <td><code>nightly_ml_rescoring</code></td>
+                <td>Every minute (dev)</td>
+                <td>Re-score ML models and trigger webhooks</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Task Statistics</h2>
+    <div class="metric">
+        <div class="metric-label">Worker Processes</div>
+        <div class="metric-value">{{ active_tasks|length }}</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">Total Active</div>
+        <div class="metric-value">{{ total_active }}</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">Total Scheduled</div>
+        <div class="metric-value">{{ total_scheduled }}</div>
+    </div>
+</div>
+{% endblock %}

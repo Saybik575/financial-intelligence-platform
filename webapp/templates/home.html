@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="text-center py-5">
+
+    <h1 class="display-3 fw-bold mb-4">
+        Financial Intelligence Platform
+    </h1>
+
+    <p class="lead mb-5">
+
+        Analyze Nifty 100 companies using
+        financial analytics,
+        machine learning health scores,
+        and interactive comparison tools.
+
+    </p>
+
+    <div class="d-flex justify-content-center gap-3">
+
+        <a
+            href="/api/companies/page/"
+            class="btn btn-dark btn-lg"
+        >
+            Explore Companies
+        </a>
+
+        <a
+            href="/api/companies/compare/"
+            class="btn btn-outline-dark btn-lg"
+        >
+            Compare Companies
+        </a>
+
+    </div>
+
+</div>
+
+<div class="row mt-5">
+
+    <div class="col-md-4">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body text-center">
+
+                <h2 class="display-5">
+                    {{ company_count }}
+                </h2>
+
+                <h5>
+                    Companies Tracked
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body text-center">
+
+                <h2 class="display-5">
+                    ML
+                </h2>
+
+                <h5>
+                    Health Score Engine
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body text-center">
+
+                <h2 class="display-5">
+                    API
+                </h2>
+
+                <h5>
+                    REST API Integration
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

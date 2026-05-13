@@ -1,0 +1,119 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}API Usage Analytics{% endblock %}
+{% block page_subtitle %}API call patterns, performance metrics, and endpoint statistics{% endblock %}
+
+{% block content %}
+<div class="kpi-grid">
+    <div class="kpi blue">
+        <div class="kpi-label">P50 Latency</div>
+        <div class="kpi-value">{{ p50_latency }}</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">P95 Latency</div>
+        <div class="kpi-value">{{ p95_latency }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Top Endpoints</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Endpoint</th>
+                <th>Calls</th>
+                <th>Avg Response Time</th>
+                <th>Error Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for endpoint in endpoint_stats %}
+            <tr>
+                <td><code>{{ endpoint.endpoint }}</code></td>
+                <td>{{ endpoint.count }}</td>
+                <td>{{ endpoint.avg_response_time|floatformat:2 }}ms</td>
+                <td>{{ endpoint.error_rate|floatformat:1 }}%</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #9ca3af;">No usage data</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Status Code Distribution</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Status Code</th>
+                <th>Count</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for status in status_distribution %}
+            <tr>
+                <td>
+                    <span class="status-badge {% if status.status_code < 300 %}status-success{% elif status.status_code < 400 %}status-pending{% else %}status-failed{% endif %}">
+                        {{ status.status_code }}
+                    </span>
+                </td>
+                <td>{{ status.count }}</td>
+                <td>
+                    <div style="width: {{ status.count|add:0 }}%; height: 24px; background-color: {% if status.status_code < 300 %}#10b981{% elif status.status_code < 400 %}#f59e0b{% else %}#ef4444{% endif %}; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; color: white; font-size: 0.875rem;">
+                        {{ status.count }}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #9ca3af;">No status data</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Daily Call Volume (Last 30 Days)</h2>
+    <div class="chart-container">
+        <canvas id="daily-calls-chart"></canvas>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('daily-calls-chart').getContext('2d');
+    const dailyCalls = {{ daily_calls|safe }};
+    
+    const labels = dailyCalls.map(d => d.day);
+    const data = dailyCalls.map(d => d.count);
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'API Calls',
+                data: data,
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

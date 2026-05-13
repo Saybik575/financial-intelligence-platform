@@ -1,0 +1,125 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Executive Summary{% endblock %}
+{% block page_subtitle %}High-level KPIs and operational metrics{% endblock %}
+
+{% block content %}
+<div class="kpi-grid">
+    <div class="kpi green">
+        <div class="kpi-label">Total Companies</div>
+        <div class="kpi-value">{{ total_companies }}</div>
+    </div>
+    <div class="kpi blue">
+        <div class="kpi-label">Financial Records</div>
+        <div class="kpi-value">{{ total_financials }}</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Avg Health Score</div>
+        <div class="kpi-value">{{ avg_health_score }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Company Health Distribution</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Health Label</th>
+                <th>Count</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in health_distribution %}
+            <tr>
+                <td>
+                    <span class="health-badge health-{{ item.health_label|lower }}">
+                        {{ item.health_label }}
+                    </span>
+                </td>
+                <td>{{ item.count }}</td>
+                <td>{{ item.count|add:0 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Top Sectors</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sector</th>
+                <th>Companies</th>
+                <th>Avg ROE</th>
+                <th>Avg Profit Margin</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sector_stats %}
+            <tr>
+                <td>{{ item.sector }}</td>
+                <td>{{ item.count }}</td>
+                <td>{{ item.avg_roe|floatformat:2 }}%</td>
+                <td>{{ item.avg_profit_margin|floatformat:2 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h2>Recent API Activity</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_apis %}
+                <tr>
+                    <td>{{ log.client.name|default:"Anonymous" }}</td>
+                    <td>
+                        <span class="status-badge status-{% if log.status_code < 300 %}success{% elif log.status_code < 400 %}pending{% else %}failed{% endif %}">
+                            {{ log.status_code }}
+                        </span>
+                    </td>
+                    <td>{{ log.created_at|date:"M d, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Recent Webhooks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in recent_webhooks %}
+                <tr>
+                    <td>{{ event.event_type }}</td>
+                    <td>
+                        <span class="status-badge status-{{ event.status }}">
+                            {{ event.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ event.created_at|date:"M d, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

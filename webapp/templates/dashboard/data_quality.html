@@ -1,0 +1,65 @@
+{% extends 'dashboard/base.html' %}
+{% load company_extras %}
+
+{% block page_title %}Data Quality Monitor{% endblock %}
+{% block page_subtitle %}Company vs year coverage matrix and completeness metrics{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Data Completeness</h2>
+    <div class="kpi green">
+        <div class="kpi-label">Overall Completeness</div>
+        <div class="kpi-value">{{ completeness }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Company-Year Coverage Matrix</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company</th>
+                {% for year in years %}
+                <th style="text-align: center; font-size: 0.875rem;">{{ year }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in quality_matrix %}
+            <tr>
+                <td><strong>{{ row.company.symbol }}</strong></td>
+                {% for year in years %}
+                <td style="text-align: center;">
+                    {% if row.years|get_item:year %}
+                    <span style="color: #10b981; font-weight: bold;">✓</span>
+                    {% else %}
+                    <span style="color: #d1d5db;">-</span>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Legend</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+        <div>
+            <span style="color: #10b981; font-weight: bold;">✓</span> - Financial data available
+        </div>
+        <div>
+            <span style="color: #d1d5db;">-</span> - No data for this year
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function getItemFromDict(dict, key) {
+    return dict[key];
+}
+</script>
+{% endblock %}

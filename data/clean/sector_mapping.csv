@@ -1,0 +1,102 @@
+symbol,sector,sub_sector
+ABB,Industrial,Electrical Equipment
+ADANIENSOL,Energy,Renewable
+ADANIENT,Industrial,Trading & Conglomerate
+ADANIGREEN,Energy,Renewable
+ADANIPORTS,Transport,Ports
+ADANIPOWER,Power,Power Generation
+AMBUJACEM,Cement,Cement
+APOLLOHOSP,Healthcare,Hospital
+ASIANPAINT,Paint,Paints
+ATGL,Energy,Gas Distribution
+AXISBANK,Banking,Private Bank
+BAJAJ-AUTO,Auto,2W & 3W
+BAJAJFINSV,NBFC,Financial Services
+BAJAJHLDNG,Holding Company,Holding
+BAJFINANCE,NBFC,Lending
+BANKBARODA,Banking,Public Bank
+BEL,Industrial,Defense Electronics
+BHARTIARTL,Telecom,Telecom Services
+BHEL,Industrial,Heavy Electrical
+BOSCHLTD,Auto,Auto Ancillary
+BPCL,Energy,Refining
+BRITANNIA,Consumer Goods,FMCG
+CANBK,Banking,Public Bank
+CHOLAFIN,NBFC,Vehicle Finance
+CIPLA,Healthcare,Pharma
+COALINDIA,Energy,Coal
+DABUR,Consumer Goods,FMCG
+DIVISLAB,Healthcare,Pharma
+DLF,Real Estate,Real Estate Developer
+DMART,Consumer Goods,Retail
+DRREDDY,Healthcare,Pharma
+EICHERMOT,Auto,2W & CV
+GAIL,Energy,Gas Transmission
+GODREJCP,Consumer Goods,FMCG
+GRASIM,Industrial,Conglomerate
+HAL,Industrial,Defense
+HAVELLS,Industrial,Consumer Electrical
+HCLTECH,IT,IT Services
+HDFCBANK,Banking,Private Bank
+HDFCLIFE,Insurance,Life Insurance
+HEROMOTOCO,Auto,2W
+HINDALCO,Metals,Aluminium
+HINDUNILVR,Consumer Goods,FMCG
+ICICIBANK,Banking,Private Bank
+ICICIGI,Insurance,General Insurance
+ICICIPRULI,Insurance,Life Insurance
+INDIGO,Transport,Aviation
+INDUSINDBK,Banking,Private Bank
+INFY,IT,IT Services
+IOC,Energy,Refining
+IRCTC,Transport,Railway Services
+IRFC,NBFC,Railway Finance
+ITC,Consumer Goods,FMCG
+JINDALSTEL,Metals,Steel
+JIOFIN,Finance,Financial Services
+JSWENERGY,Power,Power Generation
+JSWSTEEL,Metals,Steel
+KOTAKBANK,Banking,Private Bank
+LICI,Insurance,Life Insurance
+LODHA,Real Estate,Real Estate Developer
+LT,Industrial,Engineering
+LTIM,IT,IT Services
+M&M,Auto,Passenger Vehicles
+MARUTI,Auto,Passenger Vehicles
+MOTHERSON,Auto,Auto Ancillary
+NAUKRI,Consumer Services,Internet Services
+NESTLEIND,Consumer Goods,FMCG
+NHPC,Power,Hydro Power
+NTPC,Power,Power Generation
+ONGC,Energy,Oil & Gas
+PFC,NBFC,Power Finance
+PIDILITIND,Paint,Chemicals
+PNB,Banking,Public Bank
+POWERGRID,Power,Transmission
+RECLTD,NBFC,Infrastructure Finance
+RELIANCE,Energy,Oil & Gas
+SBILIFE,Insurance,Life Insurance
+SBIN,Banking,Public Bank
+SHREECEM,Cement,Cement
+SHRIRAMFIN,NBFC,Lending
+SIEMENS,Industrial,Capital Goods
+SUNPHARMA,Healthcare,Pharma
+TATACONSUM,Consumer Goods,FMCG
+TATAMOTORS,Auto,Passenger & CV
+TATAPOWER,Power,Power Generation
+TATASTEEL,Metals,Steel
+TCS,IT,IT Services
+TECHM,IT,IT Services
+TITAN,Consumer Goods,Jewellery & Watches
+TORNTPHARM,Healthcare,Pharma
+TRENT,Consumer Goods,Retail
+TVSMOTOR,Auto,2W
+ULTRACEMCO,Cement,Cement
+UNIONBANK,Banking,Public Bank
+UNITDSPR,Consumer Goods,Beverages
+VBL,Consumer Goods,Beverages
+VEDL,Metals,Diversified Metals & Mining
+WIPRO,IT,IT Services
+ZOMATO,Consumer Services,Internet Services
+ZYDUSLIFE,Healthcare,Pharma
+AGTL,Energy,Gas Distribution

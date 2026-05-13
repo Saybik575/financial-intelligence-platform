@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% load company_extras humanize %}
+
+{% block content %}
+
+    <div class="container mt-5">
+
+        <h1 class="mb-2 text-center">
+            Nifty 100 Companies
+        </h1>
+
+        <p class="text-center text-muted">
+            Showing
+
+            <strong>
+                {{ companies|length }}
+            </strong>
+
+            companies on this page
+
+            out of
+
+            <strong>
+                {{ companies.paginator.count }}
+            </strong>
+
+            filtered companies
+        </p>
+
+        <form method="GET" class="mb-4">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control form-control-lg"
+                        placeholder="Search by company name or symbol..."
+                        value="{{ search_query }}"
+                    >
+
+                <button class="btn btn-dark btn-lg w-100">
+                    Search
+                </button>
+
+            </div>
+
+                <div class="col-md-3">
+
+                <select
+                    name="sector"
+                    class="form-select form-select-lg"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        All Sectors
+                    </option>
+
+                    {% for sector in sectors %}
+
+                        <option
+                            value="{{ sector.sector_id }}"
+
+                            {% if sector.sector_id|stringformat:"s" == sector_filter %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ sector.sector_name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+                <div class="col-md-3">
+
+                    <select
+                        name="sort"
+                        class="form-select form-select-lg"
+                        onchange="this.form.submit()"
+                    >
+
+                        <option value="">
+                            Sort By
+                        </option>
+
+                        <option
+                            value="company_name"
+
+                            {% if sort_by == "company_name" %}
+                                selected
+                            {% endif %}
+                        >
+                            Company Name A-Z
+                        </option>
+
+                        <option
+                            value="-company_name"
+
+                            {% if sort_by == "-company_name" %}
+                                selected
+                            {% endif %}
+                        >
+                            Company Name Z-A
+                        </option>
+
+                        <option
+                            value="symbol"
+
+                            {% if sort_by == "symbol" %}
+                                selected
+                            {% endif %}
+                        >
+                            Symbol A-Z
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <input
+                        type="number"
+                        step="0.1"
+                        name="min_score"
+                        class="form-control form-control-lg"
+                        placeholder="Min Score"
+                        value="{{ request.GET.min_score }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <input
+                        type="number"
+                        step="1"
+                        name="min_sales"
+                        class="form-control form-control-lg"
+                        placeholder="Min Sales"
+                        value="{{ request.GET.min_sales }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <input
+                        type="number"
+                        step="0.1"
+                        name="min_eps"
+                        class="form-control form-control-lg"
+                        placeholder="Min EPS"
+                        value="{{ request.GET.min_eps }}"
+                    >
+
+                </div>
+
+        </div>
+
+        </form>
+
+        <div class="card shadow">
+            <div class="card-body">
+
+                <table class="table table-hover table-bordered">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company Name</th>
+                            <th>Sector</th>
+                            <th>Health Score</th>
+                            <th>Health Label</th>
+                            <th>Sales</th>
+                            <th>Net Profit</th>
+                            <th>EPS</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for company in companies %}
+                        <tr>
+                            <td>{{ company.symbol }}</td>
+                            <td>
+                                <a href="/api/companies/page/{{ company.symbol }}/">
+                                    {{ company.company_name }}
+                                </a>
+                            </td>
+                            <td>
+
+                                <a
+                                    href="/sector/{{ company.sector.sector_name }}/"
+                                >
+
+                                    {{ company.sector }}
+
+                                </a>
+
+                            </td>
+                            <td>
+
+                                {% with score=latest_scores|get_item:company.symbol %}
+
+                                    {% if score %}
+
+                                        <span
+                                            class="badge"
+                                            style="background-color: {{ score.color_hex|default:'#0d6efd' }};"
+                                        >
+                                            {{ score.overall_score|floatformat:2 }}
+                                        </span>
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+                            <td>
+
+                                {% with score=latest_scores|get_item:company.symbol %}
+
+                                    {% if score %}
+
+                                        <span
+                                            class="badge"
+                                            style="background-color: {{ score.color_hex|default:'#0d6efd' }};"
+                                        >
+                                            {{ score.health_label|default:"N/A" }}
+                                        </span>
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+                            <td>
+
+                                {% with fin=latest_financials|get_item:company.symbol %}
+
+                                    {% if fin %}
+                                        {{ fin.sales|indian_currency }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+
+                            <td>
+
+                                {% with fin=latest_financials|get_item:company.symbol %}
+
+                                    {% if fin %}
+                                        {{ fin.net_profit|indian_currency }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+
+                            <td>
+
+                                {% with fin=latest_financials|get_item:company.symbol %}
+
+                                    {% if fin %}
+                                        {{ fin.eps|floatformat:2 }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+                <!-- Pagination -->
+                {% if companies.paginator and companies.paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if companies.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ companies.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sector_filter %}&sector={{ sector_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                        {% endif %}
+
+                        {% for num in companies.paginator.page_range %}
+                            {% if num == companies.number %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > companies.number|add:-3 and num < companies.number|add:3 %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sector_filter %}&sector={{ sector_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if companies.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ companies.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sector_filter %}&sector={{ sector_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

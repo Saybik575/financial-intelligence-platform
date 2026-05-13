@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% load company_extras %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="mb-4 text-center">
+        Compare Companies
+    </h1>
+
+    <form method="GET" class="mb-5" id="compareForm">
+
+        <div class="row g-3">
+
+            <div class="col-md-10">
+
+                <div id="companiesList" class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+
+                    {% for company in all_companies %}
+
+                    <div class="company-option {% if company.symbol in selected_symbols %}selected{% endif %}" 
+                         data-symbol="{{ company.symbol }}">
+                        <input 
+                            type="checkbox" 
+                            name="symbols" 
+                            value="{{ company.symbol }}"
+                            {% if company.symbol in selected_symbols %}checked{% endif %}
+                        >
+                        <span>{{ company.symbol }} - {{ company.company_name }}</span>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <div id="selected-count">
+                    <strong>Selected:</strong> <span id="count">0</span> companies
+                </div>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button type="submit" class="btn btn-dark w-100">
+                    Compare
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+    {% if companies %}
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Metric</th>
+
+                        {% for company in companies %}
+
+                        <th>
+                            {{ company.symbol }}
+                        </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Company Name</td>
+
+                        {% for company in companies %}
+
+                        <td>
+                            {{ company.company_name }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Sector</td>
+
+                        {% for company in companies %}
+
+                        <td>
+                            {{ company.sector }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Health Score</td>
+
+                        {% for company in companies %}
+
+                        <td>
+
+                            {% with score=latest_scores|get_item:company.symbol %}
+
+                                {% if score %}
+
+                                    {{ score.overall_score }}
+
+                                {% else %}
+
+                                    N/A
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Sales</td>
+
+                        {% for company in companies %}
+
+                        <td>
+
+                            {% with fin=latest_financials|get_item:company.symbol %}
+
+                                {% if fin %}
+
+                                    {{ fin.sales|indian_currency }}
+
+                                {% else %}
+
+                                    N/A
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Net Profit</td>
+
+                        {% for company in companies %}
+
+                        <td>
+
+                            {% with fin=latest_financials|get_item:company.symbol %}
+
+                                {% if fin %}
+
+                                    {{ fin.net_profit|indian_currency }}
+
+                                {% else %}
+
+                                    N/A
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    <tr>
+
+                        <td>EPS</td>
+
+                        {% for company in companies %}
+
+                        <td>
+
+                            {% with fin=latest_financials|get_item:company.symbol %}
+
+                                {% if fin %}
+
+                                    {{ fin.eps|floatformat:2 }}
+
+                                {% else %}
+
+                                    N/A
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            <div class="card shadow mt-5">
+
+                <div class="card-body">
+
+                    <h3 class="mb-4">
+                        Revenue Comparison
+                    </h3>
+
+                    <canvas id="compareChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+    // Handle checkbox selection
+    document.querySelectorAll('.company-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            if (e.target.tagName === 'INPUT') {
+                return; // Let checkbox handle itself
+            }
+            
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('selected');
+            updateCount();
+        });
+
+        // Handle checkbox changes
+        const checkbox = option.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', function() {
+            option.classList.toggle('selected', this.checked);
+            updateCount();
+        });
+    });
+
+    function updateCount() {
+        const count = document.querySelectorAll('input[name="symbols"]:checked').length;
+        document.getElementById('count').textContent = count;
+    }
+
+    // Initialize count on page load
+    updateCount();
+</script>
+
+<script>
+    // Chart data
+    const chartDataObj = {{ chart_data|safe }};
+    
+    // Generate datasets and labels
+    const datasets = [];
+    const colors = ['rgb(75, 192, 192)', 'rgb(255, 99, 132)', 'rgb(255, 193, 7)', 'rgb(156, 39, 176)', 'rgb(33, 150, 243)'];
+    let labelSet = [];
+    let colorIndex = 0;
+
+    for (const symbol in chartDataObj) {
+        const data = chartDataObj[symbol];
+        
+        if (colorIndex === 0) {
+            labelSet = data.years;
+        }
+        
+        datasets.push({
+            label: symbol,
+            data: data.sales,
+            borderColor: colors[colorIndex % colors.length],
+            backgroundColor: colors[colorIndex % colors.length].replace('rgb', 'rgba').replace(')', ', 0.1)'),
+            borderWidth: 2,
+            tension: 0.4,
+            fill: false
+        });
+        
+        colorIndex++;
+    }
+
+    const ctx = document.getElementById("compareChart");
+    if (ctx && labelSet.length > 0) {
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labelSet,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

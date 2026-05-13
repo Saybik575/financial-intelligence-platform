@@ -1,0 +1,92 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}API Management{% endblock %}
+{% block page_subtitle %}Partner API clients, tiers, and usage quotas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Tier Distribution</h2>
+    <div class="kpi-grid">
+        {% for dist in tier_distribution %}
+        <div class="kpi blue">
+            <div class="kpi-label">{{ dist.tier }} Clients</div>
+            <div class="kpi-value">{{ dist.count }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>API Clients</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Tier</th>
+                <th>Status</th>
+                <th>API Calls</th>
+                <th>Webhooks</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+            <tr>
+                <td>{{ client.name }}</td>
+                <td>
+                    <span style="background-color: #e5e7eb; padding: 0.25rem 0.75rem; border-radius: 0.25rem;">
+                        {{ client.get_tier_display }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge {% if client.is_active %}status-success{% else %}status-failed{% endif %}">
+                        {% if client.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </td>
+                <td>{{ client.total_calls }}</td>
+                <td>{{ client.webhook_count }}</td>
+                <td>{{ client.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #9ca3af;">No API clients found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Rate Limiting Tiers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tier</th>
+                <th>Per Minute</th>
+                <th>Per Hour</th>
+                <th>Per Day</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>BASIC</td>
+                <td>10</td>
+                <td>100</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>PRO</td>
+                <td>60</td>
+                <td>1,000</td>
+                <td>10,000</td>
+            </tr>
+            <tr>
+                <td>ENTERPRISE</td>
+                <td>300</td>
+                <td>10,000</td>
+                <td>999,999</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    Financial Screener
+</h1>
+
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+
+                <input
+                    type="number"
+                    id="minRoe"
+                    class="form-control"
+                    placeholder="Minimum ROE"
+                >
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input
+                    type="number"
+                    id="minSalesGrowth"
+                    class="form-control"
+                    placeholder="Minimum Sales Growth %"
+                >
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input
+                    type="number"
+                    step="0.1"
+                    id="minHealthScore"
+                    class="form-control"
+                    placeholder="Minimum Health Score"
+                >
+
+            </div>
+
+            <div class="col-md-3">
+
+                <button
+                    class="btn btn-dark w-100"
+                    onclick="runScreener()"
+                >
+                    Run Screener
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow">
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Symbol</th>
+
+                    <th>Company</th>
+
+                    <th>Sector</th>
+
+                    <th>ROE</th>
+
+                    <th>Sales Growth</th>
+
+                    <th>Health Score</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="resultsBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+async function runScreener() {
+
+    const minRoe =
+        document.getElementById("minRoe").value;
+
+    const minSalesGrowth =
+        document.getElementById(
+            "minSalesGrowth"
+        ).value;
+
+    const minHealthScore =
+        document.getElementById(
+            "minHealthScore"
+        ).value;
+
+    const params = [];
+
+    if (minRoe) {
+        params.push(`min_roe=${minRoe}`);
+    }
+
+    if (minSalesGrowth) {
+        params.push(
+            `min_sales_growth=${minSalesGrowth}`
+        );
+    }
+
+    if (minHealthScore) {
+        params.push(
+            `min_health_score=${minHealthScore}`
+        );
+    }
+
+    let url =
+        "/api/financials/v1/screener/";
+
+    if (params.length > 0) {
+        url += "?" + params.join("&");
+    }
+
+    const response = await fetch(url);
+
+    const data = await response.json();
+
+    const tbody =
+        document.getElementById("resultsBody");
+
+    tbody.innerHTML = "";
+
+    data.forEach(company => {
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+
+                    <a href="/api/companies/page/${company.symbol}/">
+
+                        ${company.symbol}
+
+                    </a>
+
+                </td>
+
+                <td>${company.company_name}</td>
+
+                <td>${company.sector}</td>
+
+                <td>${company.roe}</td>
+
+                <td>${company.sales_growth}</td>
+
+                <td>${company.health_score ? company.health_score.toFixed(2) : 'N/A'}</td>
+
+            </tr>
+
+        `;
+    });
+}
+
+runScreener();
+
+</script>
+
+{% endblock %}

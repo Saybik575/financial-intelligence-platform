@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <h1 class="mb-4">
+                {{ company.company_name }}
+            </h1>
+
+            <p>
+                <strong>Symbol:</strong>
+                {{ company.symbol }}
+            </p>
+
+            <p>
+                <strong>Sector:</strong>
+                <a
+                    href="/sector/{{ company.sector.sector_name }}/"
+                >
+                    {{ company.sector }}
+                </a>
+            </p>
+
+            <div class="card shadow-sm mt-4 border-0">
+
+                <div class="card-body text-center">
+
+                    <h2 class="display-5 fw-bold" style="color: {{ latest_score.color_hex|default:'#0d6efd' }};">
+                        {{ latest_score.overall_score|default:0|floatformat:2 }}
+                    </h2>
+
+                    <h4>
+
+                        <span
+                            class="badge px-3 py-2 {% if latest_score.health_label == 'AVERAGE' %}text-dark{% else %}text-white{% endif %}"
+                            style="background-color: {{ latest_score.color_hex|default:'#0d6efd' }};"
+                        >
+                            {{ latest_score.health_label|default:"N/A" }}
+                        </span>
+
+                    </h4>
+
+                    <p class="text-muted mt-2">
+                        ML Financial Health Score
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a href="/api/companies/page/" class="btn btn-secondary">
+                Back
+            </a>
+
+            <hr class="my-4">
+
+            <h3 class="mb-3">
+                Financial Performance
+            </h3>
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Year</th>
+                        <th>Sales</th>
+                        <th>Net Profit</th>
+                        <th>EPS</th>
+                        <th>OPM %</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in financials %}
+
+                    <tr>
+                        <td>{{ item.year_label }}</td>
+                        <td>{{ item.sales }}</td>
+                        <td>{{ item.net_profit }}</td>
+                        <td>{{ item.eps }}</td>
+                        <td>{{ item.opm_pct }}</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <hr class="my-5">
+
+            <h3 class="mb-4">
+                Revenue Trend
+            </h3>
+
+            <canvas id="revenueChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const companySymbol = "{{ company.symbol }}";
+
+fetch(`/api/financials/charts/${encodeURIComponent(companySymbol)}/`)
+    .then(response => response.json())
+
+    .then(data => {
+
+        const ctx =
+            document.getElementById("revenueChart");
+
+        new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels: data.years,
+
+                datasets: [
+
+                    {
+                        label: "Revenue",
+
+                        data: data.sales,
+
+                        borderWidth: 3
+                    },
+
+                    {
+                        label: "Net Profit",
+
+                        data: data.net_profit,
+
+                        borderWidth: 3
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

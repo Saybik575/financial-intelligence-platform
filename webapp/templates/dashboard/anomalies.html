@@ -1,0 +1,98 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Anomalies & Flags{% endblock %}
+{% block page_subtitle %}Identified data quality issues and flagged companies{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Low Health Scores</h2>
+    <p style="color: #6b7280; margin-bottom: 1rem;">Companies with health scores below 40</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Score</th>
+                <th>Label</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for score in low_scores %}
+            <tr>
+                <td><strong>{{ score.symbol }}</strong></td>
+                <td>{{ score.overall_score|floatformat:1 }}</td>
+                <td>
+                    <span class="health-badge health-{{ score.health_label|lower }}">
+                        {{ score.health_label }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #9ca3af;">No low scores detected</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Recent Anomaly Flags</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Event</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in anomaly_webhooks %}
+            <tr>
+                <td>{{ event.company_symbol }}</td>
+                <td>{{ event.event_type }}</td>
+                <td>
+                    <span class="status-badge status-{{ event.status }}">
+                        {{ event.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ event.created_at|date:"M d, H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #9ca3af;">No recent anomaly flags</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Data Quality Issues</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Issue Type</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for analysis in anomalous_analysis %}
+            <tr>
+                <td>{{ analysis.symbol }}</td>
+                <td>
+                    {% if not analysis.roe_pct %}Missing ROE{% endif %}
+                    {% if not analysis.compounded_profit_growth_pct %}Missing Profit Growth{% endif %}
+                </td>
+                <td>{{ analysis.period_label|default:"N/A" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #9ca3af;">No data quality issues detected</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

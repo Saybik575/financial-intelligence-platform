@@ -1,0 +1,53 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django static and media files
+staticfiles/
+media/
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+*.sqlite3
+*.db
+
+# Dependencies
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Celery beat schedule
+celerybeat-schedule
+
+# Docker
+.dockerignore
+
+# OS files
+Thumbs.db
+.env.prod
+.env.dev

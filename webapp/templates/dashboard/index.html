@@ -1,0 +1,52 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Admin Insights Dashboard{% endblock %}
+{% block page_subtitle %}Operational overview and quick access to all monitoring tools{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Admin Insights</h2>
+    <p>Use the sidebar to navigate between different monitoring pages. Here's what you can do:</p>
+    <ul style="margin-left: 1.5rem; margin-top: 1rem; line-height: 1.8;">
+        <li><strong>Executive Summary</strong> - View high-level KPIs and trends</li>
+        <li><strong>Health Monitor</strong> - Track company health scores and labels</li>
+        <li><strong>Anomalies</strong> - Identify flagged companies and data issues</li>
+        <li><strong>Data Quality</strong> - Monitor data completeness and coverage</li>
+        <li><strong>API Management</strong> - Manage partner API clients and tiers</li>
+        <li><strong>API Usage</strong> - Analyze API call patterns and performance</li>
+        <li><strong>Webhooks</strong> - Monitor webhook delivery success and failures</li>
+        <li><strong>Bulk Import</strong> - Upload and validate CSV data</li>
+        <li><strong>Celery Monitor</strong> - Track background task execution</li>
+    </ul>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h2>Quick Stats</h2>
+        <div class="metric">
+            <div class="metric-label">Total Companies</div>
+            <div class="metric-value">{{ total_companies }}</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">API Clients</div>
+            <div class="metric-value">{{ api_clients }}</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Webhooks Active</div>
+            <div class="metric-value">{{ webhooks_active }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Getting Started</h2>
+        <p>The Admin Insights Dashboard provides comprehensive monitoring and management tools for your financial intelligence platform.</p>
+        <p style="margin-top: 1rem;">Key features include:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li>Real-time health scoring</li>
+            <li>API usage analytics</li>
+            <li>Webhook delivery tracking</li>
+            <li>Data quality metrics</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% load company_extras %}
+
+{% block content %}
+
+<h1 class="mb-4">
+
+    {{ sector.sector_name }} Sector
+
+</h1>
+
+<div class="row mb-5">
+
+    <div class="row mb-5">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ avg_roe }}%
+
+                    </h2>
+
+                    <h5>
+
+                        Average ROE
+
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-body text-center">
+
+                    <h2>
+
+                        {{ avg_growth }}%
+
+                    </h2>
+
+                    <h5>
+
+                        Average Sales Growth
+
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-body text-center">
+
+                <h2>
+                    {{ company_data|length }}
+                </h2>
+
+                <h5>
+                    Companies
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-body text-center">
+
+                <h2>
+
+                    {{ top_companies.0.company.symbol }}
+
+                </h2>
+
+                <h5>
+                    Top Ranked
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-body text-center">
+
+                <h2>
+
+                    {{ bottom_companies.0.company.symbol }}
+
+                </h2>
+
+                <h5>
+                    Lowest Ranked
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow mb-5">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            Aggregate Sector Revenue Trend
+
+        </h3>
+
+        <canvas id="sectorRevenueChart"></canvas>
+
+    </div>
+
+</div>
+
+<div class="card shadow mb-5">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            Companies Ranked By Health Score
+
+        </h3>
+
+        <table class="table table-bordered">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Rank</th>
+
+                    <th>Symbol</th>
+
+                    <th>Company</th>
+
+                    <th>Health Score</th>
+
+                    <th>ROE</th>
+
+                    <th>Sales Growth</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in company_data %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="/api/companies/page/{{ item.company.symbol }}/"
+                        >
+
+                            {{ item.company.symbol }}
+
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        {{ item.company.company_name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.score }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.roe }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.sales_growth }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+const years = [
+
+    {% for year in years %}
+
+        "{{ year }}"
+
+        {% if not forloop.last %},{% endif %}
+
+    {% endfor %}
+];
+
+const revenues = [
+
+    {% for value in revenue_values %}
+
+        {{ value }}
+
+        {% if not forloop.last %},{% endif %}
+
+    {% endfor %}
+];
+
+const ctx =
+    document.getElementById(
+        "sectorRevenueChart"
+    );
+
+new Chart(ctx, {
+
+    type: "line",
+
+    data: {
+
+        labels: years,
+
+        datasets: [
+
+            {
+
+                label:
+                    "Sector Revenue",
+
+                data: revenues,
+
+                borderWidth: 3
+            }
+        ]
+    },
+
+    options: {
+        responsive: true
+    }
+});
+
+</script>
+
+{% endblock %}

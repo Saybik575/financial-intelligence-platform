@@ -1,0 +1,20 @@
+sector_id,sector_name,sector_code,description
+1,Auto,AUTO,Automobile manufacturers and suppliers
+2,Banking,BANKING,Commercial banks and financial institutions
+3,Cement,CEMENT,Cement manufacturing companies
+4,Consumer Goods,CONSUMER_GOODS,FMCG and retail businesses
+5,Consumer Services,CONSUMER_SERVICES,
+6,Energy,ENERGY,"Oil, gas, and renewable energy companies"
+7,Finance,FINANCE,Financial services and investment firms
+8,Healthcare,HEALTHCARE,Pharmaceutical and hospital companies
+9,Holding Company,HOLDING_COMPANY,Investment holding entities
+10,IT,IT,Information Technology services and consulting companies
+11,Industrial,INDUSTRIAL,Engineering and capital goods companies
+12,Insurance,INSURANCE,Life and general insurance providers
+13,Metals,METALS,Steel and metal production companies
+14,NBFC,NBFC,Non-banking financial companies
+15,Paint,PAINT,Paint and chemical coating companies
+16,Power,POWER,Electric power generation and distribution
+17,Real Estate,REAL_ESTATE,Property development companies
+18,Telecom,TELECOM,Telecommunication service providers
+19,Transport,TRANSPORT,"Logistics, aviation, and railway services"

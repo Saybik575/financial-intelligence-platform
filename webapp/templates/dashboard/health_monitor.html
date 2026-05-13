@@ -1,0 +1,39 @@
+{% extends 'dashboard/base.html' %}
+
+{% block page_title %}Health Monitor{% endblock %}
+{% block page_subtitle %}Color-coded company health scores and status{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Company Health Status</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Symbol</th>
+                <th>Health Status</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in company_health %}
+            <tr>
+                <td>{{ item.company.company_name }}</td>
+                <td><strong>{{ item.company.symbol }}</strong></td>
+                <td>
+                    <span class="health-badge health-{{ item.health_label|lower }}" style="background-color: {{ item.color }}; color: white;">
+                        {{ item.health_label }}
+                    </span>
+                </td>
+                <td>
+                    <div style="width: 100px; height: 24px; background-color: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ item.overall_score }}%; height: 100%; background-color: {% if item.overall_score > 70 %}#10b981{% elif item.overall_score > 50 %}#f59e0b{% else %}#ef4444{% endif %}; transition: width 0.3s;"></div>
+                    </div>
+                    {{ item.overall_score|floatformat:1 }}/100
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

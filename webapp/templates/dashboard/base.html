@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Insights Dashboard{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+        .navbar {
+            background-color: #1f2937;
+            padding: 1rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+        .navbar a {
+            color: #9ca3af;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+        .navbar a:hover {
+            color: white;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #374151;
+            color: white;
+            padding: 2rem 0;
+        }
+        .sidebar a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #4b5563;
+            color: white;
+        }
+        .sidebar h2 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            padding: 1.5rem 1.5rem 0.75rem;
+            color: #9ca3af;
+            letter-spacing: 0.05em;
+        }
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+        .header {
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #6b7280;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .card h3 {
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #374151;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .kpi {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .kpi.green {
+            background: linear-gradient(135deg, #11b981 0%, #059669 100%);
+        }
+        .kpi.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .kpi.red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        table th {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        table tr:hover {
+            background-color: #f9fafb;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-failed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .status-retrying {
+            background-color: #dbeafe;
+            color: #0c2d6b;
+        }
+        .health-strong {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .health-healthy {
+            background-color: #dbeafe;
+            color: #0c2d6b;
+        }
+        .health-moderate {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .health-weak {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .health-unknown {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .health-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 100px;
+        }
+        .error-message {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+        .success-message {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #10b981;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input[type="file"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        button.secondary {
+            background-color: #6b7280;
+        }
+        button.secondary:hover {
+            background-color: #4b5563;
+        }
+        .metric {
+            display: inline-block;
+            margin-right: 2rem;
+            margin-bottom: 1rem;
+        }
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Admin Insights</h1>
+        <div>
+            {% if user.is_authenticated %}
+            <span>{{ user.username }}</span>
+            <a href="{% url 'admin:logout' %}">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Dashboard</h2>
+            <a href="{% url 'admin_index' %}" class="{% if page == 'index' %}active{% endif %}">
+                Overview
+            </a>
+            <a href="{% url 'executive_summary' %}" class="{% if page == 'executive_summary' %}active{% endif %}">
+                Executive Summary
+            </a>
+            <a href="{% url 'health_monitor' %}" class="{% if page == 'health_monitor' %}active{% endif %}">
+                Health Monitor
+            </a>
+            <a href="{% url 'anomalies' %}" class="{% if page == 'anomalies' %}active{% endif %}">
+                Anomalies
+            </a>
+            <a href="{% url 'data_quality' %}" class="{% if page == 'data_quality' %}active{% endif %}">
+                Data Quality
+            </a>
+            <h2 style="margin-top: 2rem;">Operations</h2>
+            <a href="{% url 'api_management' %}" class="{% if page == 'api_management' %}active{% endif %}">
+                API Management
+            </a>
+            <a href="{% url 'api_usage_analytics' %}" class="{% if page == 'api_usage_analytics' %}active{% endif %}">
+                API Usage
+            </a>
+            <a href="{% url 'webhooks' %}" class="{% if page == 'webhooks' %}active{% endif %}">
+                Webhooks
+            </a>
+            <h2 style="margin-top: 2rem;">Tools</h2>
+            <a href="{% url 'bulk_import' %}" class="{% if page == 'bulk_import' %}active{% endif %}">
+                Bulk Import
+            </a>
+            <a href="{% url 'celery_monitor' %}" class="{% if page == 'celery_monitor' %}active{% endif %}">
+                Celery Monitor
+            </a>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            <div class="header">
+                <h1>{% block page_title %}Admin Insights Dashboard{% endblock %}</h1>
+                <p>{% block page_subtitle %}Operational overview of the financial intelligence platform{% endblock %}</p>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
